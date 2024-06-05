@@ -18,7 +18,6 @@
 		foldGutter,
 		indentOnInput,
 		syntaxHighlighting,
-		defaultHighlightStyle,
 		bracketMatching,
 		foldKeymap
 	} from '@codemirror/language';
@@ -31,18 +30,18 @@
 		closeBracketsKeymap,
 		completionKeymap
 	} from '@codemirror/autocomplete';
-	import { oneDarkTheme, oneDark } from '@codemirror/theme-one-dark';
+	import { oneDark, oneDarkHighlightStyle } from '@codemirror/theme-one-dark';
 
 	onMount(async () => {
 		if (!browser) return;
 
 		const langMode = async () => {
-			switch (mode) {
+			switch (mode.toUpperCase()) {
 				case 'CSS':
 					return import('@codemirror/lang-css').then((x) => x.css());
 				case 'JS':
 					return import('@codemirror/lang-javascript').then((x) => x.javascript());
-				case 'HTML':
+				default:
 					return import('@codemirror/lang-html').then((x) => x.html());
 			}
 		};
@@ -52,9 +51,10 @@
 			state: EditorState.create({
 				doc: await beautify(value),
 				extensions: [
+					oneDark,
 					EditorView.lineWrapping,
-
 					lineNumbers(),
+
 					highlightActiveLineGutter(),
 					highlightSpecialChars(),
 					history(),
@@ -63,13 +63,12 @@
 					dropCursor(),
 					EditorState.allowMultipleSelections.of(true),
 					indentOnInput(),
-					syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
+					syntaxHighlighting(oneDarkHighlightStyle),
 					bracketMatching(),
 					closeBrackets(),
 					autocompletion(),
 					rectangularSelection(),
 					crosshairCursor(),
-					oneDark,
 					highlightActiveLine(),
 					highlightSelectionMatches(),
 					keymap.of([
@@ -91,8 +90,7 @@
 							oldValue = editor.state.doc.toString();
 							value = oldValue;
 						}, 300);
-					}),
-					...extensions
+					})
 				]
 			}),
 			parent: element
