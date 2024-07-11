@@ -30,7 +30,7 @@
 		closeBracketsKeymap,
 		completionKeymap
 	} from '@codemirror/autocomplete';
-	import { oneDark, oneDarkHighlightStyle } from '@codemirror/theme-one-dark';
+	import { oneDark } from '@codemirror/theme-one-dark';
 
 	onMount(async () => {
 		if (!browser) return;
@@ -63,7 +63,6 @@
 					dropCursor(),
 					EditorState.allowMultipleSelections.of(true),
 					indentOnInput(),
-					syntaxHighlighting(oneDarkHighlightStyle),
 					bracketMatching(),
 					closeBrackets(),
 					autocompletion(),
@@ -115,7 +114,12 @@
 			case 'JS':
 				return beautify.js(code);
 			case 'HTML':
-				return beautify.html(code, { indent_inner_html: true });
+				return beautify.html(code, {
+					indent_inner_html: true,
+					indent_body_inner_html: true,
+					indent_with_tabs: true,
+					preserve_newlines: true
+				});
 		}
 	};
 
