@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import {
@@ -96,14 +98,23 @@
 		});
 	});
 
-	let klass = '';
-	export { klass as class };
-	export let value = '';
-	let editor: EditorView = null;
-	export let extensions = [];
-	export let mode: 'JS' | 'HTML' | 'CSS' = 'HTML';
-	let element: HTMLDivElement;
-	let oldValue: string;
+	
+	let editor: EditorView = $state(null);
+	interface Props {
+		class?: string;
+		value?: string;
+		extensions?: any;
+		mode?: 'JS' | 'HTML' | 'CSS';
+	}
+
+	let {
+		class: klass = '',
+		value = $bindable(''),
+		extensions = [],
+		mode = 'HTML'
+	}: Props = $props();
+	let element: HTMLDivElement = $state();
+	let oldValue: string = $state();
 
 	const beautify = async (code: string) => {
 		const beautify = (await import('js-beautify')).default;
@@ -128,7 +139,9 @@
 		editor.dispatch({ changes: { from: 0, to: editor.state.doc.length, insert: code } });
 	};
 
-	$: oldValue != value && editor && setValue(value);
+	run(() => {
+		oldValue != value && editor && setValue(value);
+	});
 </script>
 
 <div bind:this={element} class={klass}></div>
