@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { run } from 'svelte/legacy';
 
-	import { onMount } from 'svelte';
+	import { onMount, untrack } from 'svelte';
 	import { browser } from '$app/environment';
 	import {
 		EditorView,
@@ -33,7 +33,8 @@
 		completionKeymap
 	} from '@codemirror/autocomplete';
 	import { oneDark } from '@codemirror/theme-one-dark';
-
+	import { debounce } from '$utils/debounce';
+	
 	onMount(async () => {
 		if (!browser) return;
 
@@ -85,12 +86,7 @@
 					await langMode(),
 					EditorView.updateListener.of((v) => {
 						if (!v.docChanged) return;
-						if (timer) clearTimeout(timer);
-
-						timer = setTimeout(() => {
-							oldValue = editor.state.doc.toString();
-							value = oldValue;
-						}, 300);
+						handleChange(editor.state.doc.toString());
 					})
 				]
 			}),
@@ -109,7 +105,7 @@
 
 	let {
 		class: klass = '',
-		value = $bindable(''),
+		value = $bindable(),
 		extensions = [],
 		mode = 'HTML'
 	}: Props = $props();
@@ -139,9 +135,19 @@
 		editor.dispatch({ changes: { from: 0, to: editor.state.doc.length, insert: code } });
 	};
 
-	run(() => {
-		oldValue != value && editor && setValue(value);
-	});
+	const handleChange = debounce((code:string )=>{
+		oldValue = code;
+		value = oldValue;
+	 }, 300);
+	 $inspect(value);
+	 $effect(()=>{
+		if(!editor) return;
+		untrack(() => {
+			if (value == oldValue) return;
+			setValue(value);
+			oldValue = value;
+		});
+	 })
 </script>
 
 <div bind:this={element} class={klass}></div>
