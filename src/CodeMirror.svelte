@@ -139,7 +139,6 @@
 		oldValue = code;
 		value = oldValue;
 	 }, 300);
-	 $inspect(value);
 	 $effect(()=>{
 		if(!editor) return;
 		untrack(() => {
