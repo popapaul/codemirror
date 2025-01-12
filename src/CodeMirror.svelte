@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { run } from 'svelte/legacy';
-
 	import { onMount, untrack } from 'svelte';
 	import { browser } from '$app/environment';
 	import {

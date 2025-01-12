@@ -4,7 +4,7 @@
     "author": "Paul Popa",
     "version": "0.0.0",
     "peerDependencies": {
-        "svelte": "^4.0.0"
+        "svelte": "^5.0.0"
     },
     "devDependencies": {
         "@codemirror/autocomplete": "^6.18.3",
